@@ -4,3 +4,4 @@ import sqlite3
 connection = sqlite3.connect("PokeBase.db")
 
 # initialize cursor to interact with database
+cursor = connection.cursor()
