@@ -1,7 +1,7 @@
 import requests
 import pandas as pd
-import streamlit as st
 import json
+import streamlit as st
 
 base_url = "https://pokeapi.co/api/v2/" # saved of convenience
 
