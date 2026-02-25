@@ -8,6 +8,7 @@ connection = sqlite3.connect("PokeBase.db")
 # initialize cursor to interact with database
 cursor = connection.cursor()
 
+connection.execute("PRAGMA foreign_keys = ON")  # Enable foreign key constraints
 
 
 

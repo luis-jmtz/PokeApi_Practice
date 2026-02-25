@@ -19,15 +19,18 @@ def get_pokemon_info(name):
     else:
         print(f"Failed to retrieve data: {response.status_code}")
 
-pokemon_name = "pikachu"
+pokemon_name = "Fuecoco"
 pokemon_info = get_pokemon_info(pokemon_name)
 
 # with open("data.json", "w") as f:
 #     json.dump(pokemon_info, f, indent=4)
 
+# print(pokemon_info.keys())
 
-
-
+# print(type(pokemon_info["sprites"]))
+sprites = pokemon_info["sprites"]
+print(sprites.keys())
+print(sprites["front_default"])
 # -------------- Testing ------------------------------#
 
 # print(type(pokemon_info["moves"])) # list
@@ -38,9 +41,9 @@ pokemon_info = get_pokemon_info(pokemon_name)
 
 # print(len(pokemon_info["moves"][0]["version_group_details"][0]))
 
-for version in pokemon_info["moves"][0]["version_group_details"]:
+# for version in pokemon_info["moves"][0]["version_group_details"]:
     
-    version_group = version["version_group"]["name"]
+#     version_group = version["version_group"]["name"]
 
-    if version_group == latest_move_version_group:
-        print(version_group)
+#     if version_group == latest_move_version_group:
+#         print(version_group)
