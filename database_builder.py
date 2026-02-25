@@ -15,6 +15,7 @@ cursor = connection.cursor()
 """
 # --------- Intialize Type Table -------- #
 """
+'''
 # with open("SQL\Types_Table.sql", 'r') as file:
 #     init_types_text = file.read()
 
@@ -39,6 +40,9 @@ print(types_list)
 
 for x in types_list:
     sql_string = f"Insert Into Types (name) Values ('{x}');"
+    cursor.execute(sql_string)
+'''
 
 
+connection.commit()
 cursor.close()
