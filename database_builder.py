@@ -35,4 +35,10 @@ for x in types_dict["results"]:
 
 print(types_list)
 
+# add types to sql database
+
+for x in types_list:
+    sql_string = f"Insert Into Types (name) Values ('{x}');"
+
+
 cursor.close()
