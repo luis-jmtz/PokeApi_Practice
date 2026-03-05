@@ -13,9 +13,19 @@ connection.execute("PRAGMA foreign_keys = ON")  # Enable foreign key constraints
 
 
 
-"""
-# --------- Intialize Type Table -------- #
-"""
+
+# ------------- Initialize Core Table ----------- #
+'''
+# with open("SQL\Core_Table.sql", "r") as file:
+#     init_core_table = file.read()
+
+# cursor.execute(init_core_table)
+'''
+
+
+
+# --------- Initialize Type Table -------- #
+
 '''
 # with open("SQL\Types_Table.sql", 'r') as file:
 #     init_types_text = file.read()

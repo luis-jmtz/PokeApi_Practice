@@ -25,7 +25,7 @@ pokemon_info = get_pokemon_info(pokemon_name)
 # with open("data.json", "w") as f:
 #     json.dump(pokemon_info, f, indent=4)
 
-# print(pokemon_info.keys())
+print(pokemon_info.keys())
 
 # print(type(pokemon_info["sprites"]))
 sprites = pokemon_info["sprites"]
