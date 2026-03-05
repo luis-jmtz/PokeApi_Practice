@@ -11,6 +11,34 @@ cursor = connection.cursor()
 connection.execute("PRAGMA foreign_keys = ON")  # Enable foreign key constraints
 
 
+call_limit = 100
+# 1025 is max value since all values after are specific forms which are outside of the scope of this project
+
+first_100 = fr"https://pokeapi.co/api/v2/pokemon?limit={call_limit}" # gets the first 100 pokemon
+
+response = requests.get(first_100).json()
+
+print(type(response))
+# print(response.keys())
+
+# print(response)
+
+print(response["results"][0]["name"])
+
+loop_count = 0
+
+
+while loop_count < call_limit:
+    # try-catch keeps code from encountering an "index out of bounds" problem
+    try:
+        print(response["results"][loop_count]["name"])
+        print(f"Loop: {loop_count}")
+    except:
+        print("Loop ends")
+        break
+
+    loop_count += 1
+
 
 
 
