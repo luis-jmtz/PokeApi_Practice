@@ -18,27 +18,44 @@ first_100 = fr"https://pokeapi.co/api/v2/pokemon?limit={call_limit}" # gets the 
 
 response = requests.get(first_100).json()
 
-print(type(response))
+# print(type(response))
 # print(response.keys())
 
 # print(response)
 
-print(response["results"][0]["name"])
+# print(response["results"][0]["name"]) # prints bulbasaur
 
+
+
+
+is_name_present_script = """
+SELECT * FROM Pokemon
+WHERE name = ?
+"""
+# use the question mark to prevent injection
+def is_pokemon_in_database(pokemon): # takes the pokemon name string
+    cursor.execute(is_name_present_script, (pokemon,))
+    result = cursor.fetchone() # fetchone() returns A row/tuple containing the column values
+    return result is not None # returns true if result is not empty
+
+
+is_pokemon_in_database("bulbasaur")
+
+
+'''
 loop_count = 0
-
 
 while loop_count < call_limit:
     # try-catch keeps code from encountering an "index out of bounds" problem
     try:
-        print(response["results"][loop_count]["name"])
-        print(f"Loop: {loop_count}")
+        print(response["results"][loop_count]["name"]) # loop count is the index of the result, name is the key for the value
+        # print(f"Loop: {loop_count}")
     except:
         print("Loop ends")
         break
 
     loop_count += 1
-
+'''
 
 
 
