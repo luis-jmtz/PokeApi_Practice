@@ -33,13 +33,28 @@ SELECT * FROM Pokemon
 WHERE name = ?
 """
 # use the question mark to prevent injection
-def is_pokemon_in_database(pokemon): # takes the pokemon name string
-    cursor.execute(is_name_present_script, (pokemon,))
+def is_pokemon_in_database(pokemon_name): # takes the pokemon name string
+    cursor.execute(is_name_present_script, (pokemon_name,))
     result = cursor.fetchone() # fetchone() returns A row/tuple containing the column values
     return result is not None # returns true if result is not empty
 
 
-is_pokemon_in_database("bulbasaur")
+print(is_pokemon_in_database("bulbasaur"))
+
+
+update_entry_string = '''
+Update Pokemon
+SET dex_number = ?, type1 = ?, type2 = ?, sprite_link = ?
+WHERE name = ?
+'''
+
+def update_entry(pokemon_name):
+    '''
+    if a pokemon is already in the database, this function will update it to match the 
+    latest version in the api instead of creating a new entry.
+    '''
+    pass
+
 
 
 '''
