@@ -10,20 +10,9 @@ cursor = connection.cursor()
 
 connection.execute("PRAGMA foreign_keys = ON")  # Enable foreign key constraints
 
+# base url for api
+base_url = "https://pokeapi.co/api/v2/"
 
-call_limit = 100
-# 1025 is max value since all values after are specific forms which are outside of the scope of this project
-
-first_100 = fr"https://pokeapi.co/api/v2/pokemon?limit={call_limit}" # gets the first 100 pokemon
-
-response = requests.get(first_100).json()
-
-# print(type(response))
-# print(response.keys())
-
-# print(response)
-
-# print(response["results"][0]["name"]) # prints bulbasaur
 
 
 
@@ -39,7 +28,7 @@ def is_pokemon_in_database(pokemon_name): # takes the pokemon name string
     return result is not None # returns true if result is not empty
 
 
-print(is_pokemon_in_database("bulbasaur"))
+# print(is_pokemon_in_database("bulbasaur"))
 
 
 update_entry_string = '''
@@ -57,20 +46,58 @@ def update_entry(pokemon_name):
 
 
 
-'''
+
+call_limit = 100
+# 1025 is max value since all values after are specific forms which are outside of the scope of this project
+
+first_100 = fr"https://pokeapi.co/api/v2/pokemon?limit={call_limit}" # gets the first 100 pokemon
+
+response = requests.get(first_100).json()
+
+# print(type(response))
+# print(response.keys())
+
+# print(response["results"])
+
+# print(response["results"][0]["name"]) # prints bulbasaur
+
+temp_name = response["results"][2]["name"]
+
+print(temp_name)
+
+def get_pokemon_info(name):
+    goal_url = f"{base_url}/pokemon/{name}"
+    response = requests.get(goal_url)
+    if response.status_code == 200:
+        # print("Data Retrieved \n")
+        pokemon_data = response.json() # converts response to a python dict.
+        # print(pokemon_data)
+        return pokemon_data
+    else:
+        print(f"Failed to retrieve data: {response.status_code}")
+
+poke_info = get_pokemon_info(temp_name)
+
+
+print(poke_info.keys())
+print(poke_info["types"]) # types is a list of dictionaries, so if the length is 1, it's monotype
+print(poke_info["types"][0]["type"]["name"]) # gets the first type
+# print(poke_info["types"][1]["type"]["name"]) # if no 2nd type returns an error
+
+
 loop_count = 0
 
-while loop_count < call_limit:
-    # try-catch keeps code from encountering an "index out of bounds" problem
-    try:
-        print(response["results"][loop_count]["name"]) # loop count is the index of the result, name is the key for the value
-        # print(f"Loop: {loop_count}")
-    except:
-        print("Loop ends")
-        break
+# while loop_count < call_limit:
+#     # try-catch keeps code from encountering an "index out of bounds" problem
+#     try:
+#         print(response["results"][loop_count]["name"]) # loop count is the index of the result, name is the key for the value
+#         # print(f"Loop: {loop_count}")
+#     except:
+#         print("Loop ends")
+#         break
 
-    loop_count += 1
-'''
+#     loop_count += 1
+
 
 
 
