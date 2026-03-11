@@ -77,14 +77,19 @@ poke_info = get_pokemon_info(temp_name)
 # print(poke_info["sprites"]["front_default"]) # gets front sprite link
 
 type_conversion_script = """
-Select * Types
+Select * FROM Types
 WHERE name = ?
 """
 
-def convert_type_to_id(type):
+def convert_type_to_id(poke_type):
+    cursor.execute(type_conversion_script, (poke_type,))
+    result = cursor.fetchone()
+    # print(type(result)) # tuple
+    print(result[0])
+    type_id =  result[0]
 
-    pass
 
+convert_type_to_id("fire")
 
 
 def extract_pokemon_values(poke_info):
