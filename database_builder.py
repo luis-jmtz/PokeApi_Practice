@@ -16,7 +16,6 @@ base_url = "https://pokeapi.co/api/v2/"
 
 
 
-
 is_name_present_script = """
 SELECT * FROM Pokemon
 WHERE name = ?
@@ -50,16 +49,9 @@ def update_entry(pokemon_name):
 call_limit = 100
 # 1025 is max value since all values after are specific forms which are outside of the scope of this project
 
-first_100 = fr"https://pokeapi.co/api/v2/pokemon?limit={call_limit}" # gets the first 100 pokemon
+raw_response = fr"https://pokeapi.co/api/v2/pokemon?limit={call_limit}" # gets the first 100 pokemon
 
-response = requests.get(first_100).json()
-
-# print(type(response))
-# print(response.keys())
-
-# print(response["results"])
-
-# print(response["results"][0]["name"]) # prints bulbasaur
+response = requests.get(raw_response).json()
 
 temp_name = response["results"][2]["name"]
 
@@ -79,10 +71,34 @@ def get_pokemon_info(name):
 poke_info = get_pokemon_info(temp_name)
 
 
-print(poke_info.keys())
-print(poke_info["types"]) # types is a list of dictionaries, so if the length is 1, it's monotype
-print(poke_info["types"][0]["type"]["name"]) # gets the first type
+# print(poke_info["types"][0]["type"]["name"]) # gets the first type
 # print(poke_info["types"][1]["type"]["name"]) # if no 2nd type returns an error
+# print(poke_info["id"]) # gets dex number
+# print(poke_info["sprites"]["front_default"]) # gets front sprite link
+
+type_conversion_script = """
+Select * Types
+WHERE name = ?
+"""
+
+def convert_type_to_id(type):
+    
+    pass
+
+
+
+def extract_pokemon_values(poke_info):
+    dex_number = poke_info["id"]
+    sprite_link = poke_info["sprites"]["front_default"]
+
+    types_list = poke_info["types"]
+    type1 = types_list[0]["type"]["name"] # pokemon's first type
+
+    if len(types_list) == 1:
+        # if a pokemon is monotype
+        type2 = "-1"
+    else:
+        type2 = types_list[0]["type"]["name"]
 
 
 loop_count = 0
