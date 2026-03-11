@@ -82,7 +82,7 @@ WHERE name = ?
 """
 
 def convert_type_to_id(type):
-    
+
     pass
 
 
@@ -156,6 +156,8 @@ for x in types_list:
     sql_string = f"Insert Into Types (name) Values ('{x}');"
     cursor.execute(sql_string)
 '''
+
+# cursor.execute("Insert Into Types (name) Values ('None');")
 
 
 connection.commit()
