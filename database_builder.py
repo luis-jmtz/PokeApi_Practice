@@ -55,7 +55,6 @@ response = requests.get(raw_response).json()
 
 temp_name = response["results"][2]["name"]
 
-print(temp_name)
 
 def get_pokemon_info(name):
     goal_url = f"{base_url}/pokemon/{name}"
@@ -68,13 +67,9 @@ def get_pokemon_info(name):
     else:
         print(f"Failed to retrieve data: {response.status_code}")
 
-poke_info = get_pokemon_info(temp_name)
+# poke_info = get_pokemon_info(temp_name)
 
 
-# print(poke_info["types"][0]["type"]["name"]) # gets the first type
-# print(poke_info["types"][1]["type"]["name"]) # if no 2nd type returns an error
-# print(poke_info["id"]) # gets dex number
-# print(poke_info["sprites"]["front_default"]) # gets front sprite link
 
 type_conversion_script = """
 Select * FROM Types
@@ -84,27 +79,48 @@ WHERE name = ?
 def convert_type_to_id(poke_type):
     cursor.execute(type_conversion_script, (poke_type,))
     result = cursor.fetchone()
-    # print(type(result)) # tuple
-    print(result[0])
+    # print(result[0])
     type_id =  result[0]
+    return type_id
 
 
-convert_type_to_id("fire")
+# convert_type_to_id("fire")
 
 
 def extract_pokemon_values(poke_info):
+    poke_name = poke_info["name"]
     dex_number = poke_info["id"]
     sprite_link = poke_info["sprites"]["front_default"]
 
     types_list = poke_info["types"]
     type1 = types_list[0]["type"]["name"] # pokemon's first type
+    
 
     if len(types_list) == 1:
         # if a pokemon is monotype
-        type2 = "-1"
+        type2 = "None"
     else:
-        type2 = types_list[0]["type"]["name"]
+        type2 = types_list[1]["type"]["name"]
 
+    # print(f"Type 1: {type1}")
+    # print(f"type 2: {type2}")
+
+    type_id_1 = convert_type_to_id(type1)
+    type_id_2 = convert_type_to_id(type2)
+
+
+    # print(f"Name: {poke_name}")
+    # print(f"Dex Number: {dex_number}")
+    # print(f"Type 1 id: {type_id_1}")
+    # print(f"Type 2 id: {type_id_2}")
+    # print(f"Sprite Link: {sprite_link}")
+    return [poke_name, dex_number, type_id_1, type_id_2, sprite_link]
+
+testmon = get_pokemon_info("caterpie")
+
+testmon_values = extract_pokemon_values(testmon)
+
+print(testmon_values)
 
 loop_count = 0
 
