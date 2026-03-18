@@ -16,45 +16,23 @@ base_url = "https://pokeapi.co/api/v2/"
 
 
 
-is_name_present_script = """
-SELECT * FROM Pokemon
-WHERE name = ?
-"""
-# use the question mark to prevent injection
-def is_pokemon_in_database(pokemon_name): # takes the pokemon name string
-    cursor.execute(is_name_present_script, (pokemon_name,))
-    result = cursor.fetchone() # fetchone() returns A row/tuple containing the column values
-    return result is not None # returns true if result is not empty
-
-
-# print(is_pokemon_in_database("bulbasaur"))
-
-
-update_entry_string = '''
-Update Pokemon
-SET dex_number = ?, type1 = ?, type2 = ?, sprite_link = ?
-WHERE name = ?
-'''
-
-def update_entry(pokemon_name):
-    '''
-    if a pokemon is already in the database, this function will update it to match the 
-    latest version in the api instead of creating a new entry.
-    '''
-    pass
 
 
 
 
-call_limit = 100
+call_limit = 50
 # 1025 is max value since all values after are specific forms which are outside of the scope of this project
 
 raw_response = fr"https://pokeapi.co/api/v2/pokemon?limit={call_limit}" # gets the first 100 pokemon
 
 response = requests.get(raw_response).json()
 
-temp_name = response["results"][2]["name"]
+# temp_name = response["results"][2]["name"]
 
+
+# Functions that extract the pokemon values
+
+# ------------------------------------------------------------------- #
 
 def get_pokemon_info(name):
     goal_url = f"{base_url}/pokemon/{name}"
@@ -116,13 +94,67 @@ def extract_pokemon_values(poke_info):
     # print(f"Sprite Link: {sprite_link}")
     return [poke_name, dex_number, type_id_1, type_id_2, sprite_link]
 
-testmon = get_pokemon_info("caterpie")
 
-testmon_values = extract_pokemon_values(testmon)
 
-print(testmon_values)
+# ------------------------------------------------------------------- #
 
-loop_count = 0
+
+# Actually updates table
+
+is_name_present_script = """
+SELECT * FROM Pokemon
+WHERE name = ?
+"""
+# use the question mark to prevent injection
+def is_pokemon_in_database(pokemon_name): # takes the pokemon name string
+    cursor.execute(is_name_present_script, (pokemon_name,))
+    result = cursor.fetchone() # fetchone() returns A row/tuple containing the column values
+    return result is not None # returns true if result is not empty
+
+
+
+update_entry_string = '''
+Update Pokemon
+SET dex_number = ?, type1 = ?, type2 = ?, sprite_link = ?
+WHERE name = ?
+'''
+
+def update_entry(pokemon_name):
+    '''
+    if a pokemon is already in the database, this function will update it to match the 
+    latest version in the api instead of creating a new entry.
+    '''
+    pass
+
+
+
+def update_pokemon_table():
+    loop_count = 0
+    
+    while loop_count < call_limit:
+        try:
+            poke_name = response["results"][loop_count]["name"]
+            print(poke_name)
+
+            poke_info = get_pokemon_info(poke_name)
+            poke_values = extract_pokemon_values(poke_info)
+
+            if is_pokemon_in_database(poke_name):
+                pass
+            else:
+                update_entry(poke_name)
+
+        except:
+            print("Loop Ends")
+            break
+
+
+
+        loop_count += 1
+
+
+update_pokemon_table()
+
 
 # while loop_count < call_limit:
 #     # try-catch keeps code from encountering an "index out of bounds" problem
