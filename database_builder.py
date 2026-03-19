@@ -17,10 +17,7 @@ base_url = "https://pokeapi.co/api/v2/"
 
 
 
-
-
-
-call_limit = 50
+call_limit = 15
 # 1025 is max value since all values after are specific forms which are outside of the scope of this project
 
 raw_response = fr"https://pokeapi.co/api/v2/pokemon?limit={call_limit}" # gets the first 100 pokemon
@@ -31,7 +28,6 @@ response = requests.get(raw_response).json()
 
 
 # Functions that extract the pokemon values
-
 # ------------------------------------------------------------------- #
 
 def get_pokemon_info(name):
@@ -115,17 +111,40 @@ def is_pokemon_in_database(pokemon_name): # takes the pokemon name string
 
 update_entry_string = '''
 Update Pokemon
-SET dex_number = ?, type1 = ?, type2 = ?, sprite_link = ?
+SET dex_number = ?, type_1 = ?, type_2 = ?, sprite_link = ?
 WHERE name = ?
 '''
 
-def update_entry(pokemon_name):
+def update_entry(poke_list):
     '''
     if a pokemon is already in the database, this function will update it to match the 
     latest version in the api instead of creating a new entry.
     '''
-    pass
+    name = poke_list[0]
+    dex_num = poke_list[1]
+    type_1 = poke_list[2]
+    type_2 = poke_list[3]
+    sprite = poke_list[4]
 
+    cursor.execute(update_entry_string, (dex_num, type_1, type_2,sprite,name,))
+    connection.commit()
+
+
+create_entry_script = """
+INSERT INTO Pokemon (name, dex_number, type_1, type_2, sprite_link)
+Values(?,?,?,?,?)
+"""
+
+def create_pokemon_entry(poke_list):
+    name = poke_list[0]
+    dex_num = poke_list[1]
+    type_1 = poke_list[2]
+    type_2 = poke_list[3]
+    sprite = poke_list[4]
+
+    cursor.execute(create_entry_script, (name, dex_num, type_1, type_2,sprite,))
+    connection.commit()
+    
 
 
 def update_pokemon_table():
@@ -134,17 +153,23 @@ def update_pokemon_table():
     while loop_count < call_limit:
         try:
             poke_name = response["results"][loop_count]["name"]
-            print(poke_name)
+            # print(poke_name)
 
             poke_info = get_pokemon_info(poke_name)
             poke_values = extract_pokemon_values(poke_info)
 
             if is_pokemon_in_database(poke_name):
-                pass
+                # if the pokemon is in the database already, it updates the entry instead of creating a new one
+                update_entry(poke_values)
+                print(f"Updated Entry for: {poke_name}")
             else:
-                update_entry(poke_name)
+                create_pokemon_entry(poke_values)
+                print(f"Created Entry for: {poke_name}")
 
         except:
+            print(f"Error processing {poke_name}: {type(e).__name__}: {e}")
+            import traceback
+            traceback.print_exc()
             print("Loop Ends")
             break
 
@@ -155,17 +180,6 @@ def update_pokemon_table():
 
 update_pokemon_table()
 
-
-# while loop_count < call_limit:
-#     # try-catch keeps code from encountering an "index out of bounds" problem
-#     try:
-#         print(response["results"][loop_count]["name"]) # loop count is the index of the result, name is the key for the value
-#         # print(f"Loop: {loop_count}")
-#     except:
-#         print("Loop ends")
-#         break
-
-#     loop_count += 1
 
 
 
