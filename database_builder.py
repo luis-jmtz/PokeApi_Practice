@@ -17,7 +17,19 @@ base_url = "https://pokeapi.co/api/v2/"
 
 
 
-call_limit = 15
+
+
+
+
+
+
+
+
+
+
+
+
+call_limit = 1025
 # 1025 is max value since all values after are specific forms which are outside of the scope of this project
 
 raw_response = fr"https://pokeapi.co/api/v2/pokemon?limit={call_limit}" # gets the first 100 pokemon
@@ -178,7 +190,19 @@ def update_pokemon_table():
         loop_count += 1
 
 
-update_pokemon_table()
+# update_pokemon_table()
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
