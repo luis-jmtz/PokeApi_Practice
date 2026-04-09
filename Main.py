@@ -5,6 +5,23 @@ import streamlit as st
 
 base_url = "https://pokeapi.co/api/v2/" # saved of convenience
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+# old practice code
+'''
 latest_move_version_group = "sword-shield"
 
 
@@ -12,7 +29,7 @@ def get_pokemon_info(name):
     goal_url = f"{base_url}/pokemon/{name}"
     response = requests.get(goal_url)
     if response.status_code == 200:
-        print("Data Retrieved \n")
+        print("Data Retrieved")
         pokemon_data = response.json() # converts response to a python dict.
         # print(pokemon_data)
         return pokemon_data
@@ -47,3 +64,4 @@ print(sprites["front_default"])
 
 #     if version_group == latest_move_version_group:
 #         print(version_group)
+'''
