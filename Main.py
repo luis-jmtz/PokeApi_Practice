@@ -1,67 +1,71 @@
-import requests
-import pandas as pd
-import json
 import streamlit as st
+import sqlite3
 
-base_url = "https://pokeapi.co/api/v2/" # saved of convenience
+st.set_page_config(page_title="Pokédex Search", page_icon="🔍")
 
+@st.cache_resource
+def get_connection():
+    return sqlite3.connect("PokeBase.db", check_same_thread=False)
 
+conn = get_connection()
+cursor = conn.cursor()
 
+@st.cache_data
+def get_all_pokemon_names():
+    cursor.execute("SELECT name FROM Pokemon ORDER BY dex_number")
+    return [row[0] for row in cursor.fetchall()]
 
+def get_pokemon_details(name):
+    query = """
+        SELECT 
+            p.name,
+            p.dex_number,
+            t1.name AS type1,
+            t2.name AS type2,
+            p.sprite_link
+        FROM Pokemon p
+        LEFT JOIN Types t1 ON p.type_1 = t1.id
+        LEFT JOIN Types t2 ON p.type_2 = t2.id
+        WHERE p.name = ?
+    """
+    cursor.execute(query, (name,))
+    row = cursor.fetchone()
+    if row:
+        return {
+            "name": row[0],
+            "dex_number": row[1],
+            "type1": row[2],
+            "type2": row[3] if row[3] != "None" else None,
+            "sprite_link": row[4]
+        }
+    return None
 
+st.title("🔍 Pokédex Search")
+st.markdown("Search for a Pokémon and view its sprite and database info.")
 
+try:
+    pokemon_names = get_all_pokemon_names()
+except sqlite3.OperationalError:
+    st.error("Database tables not found. Please run `database_builder.py` first.")
+    st.stop()
 
+selected_pokemon = st.selectbox("Choose a Pokémon:", pokemon_names)
 
-
-
-
-
-
-
-
-
-# old practice code
-'''
-latest_move_version_group = "sword-shield"
-
-
-def get_pokemon_info(name):
-    goal_url = f"{base_url}/pokemon/{name}"
-    response = requests.get(goal_url)
-    if response.status_code == 200:
-        print("Data Retrieved")
-        pokemon_data = response.json() # converts response to a python dict.
-        # print(pokemon_data)
-        return pokemon_data
+if selected_pokemon:
+    details = get_pokemon_details(selected_pokemon)
+    if details:
+        col1, col2 = st.columns([1, 2])
+        with col1:
+            if details["sprite_link"]:
+                st.image(details["sprite_link"], width=200, caption=details["name"].capitalize())
+            else:
+                st.warning("No sprite available.")
+        with col2:
+            st.subheader(details["name"].capitalize())
+            st.write(f"**National Dex Number:** #{details['dex_number']:03d}")
+            type_str = details["type1"].capitalize()
+            if details["type2"]:
+                type_str += f" / {details['type2'].capitalize()}"
+            st.write(f"**Type(s):** {type_str}")
     else:
-        print(f"Failed to retrieve data: {response.status_code}")
-
-pokemon_name = "Fuecoco"
-pokemon_info = get_pokemon_info(pokemon_name)
-
-# with open("data.json", "w") as f:
-#     json.dump(pokemon_info, f, indent=4)
-
-print(pokemon_info.keys())
-
-# print(type(pokemon_info["sprites"]))
-sprites = pokemon_info["sprites"]
-print(sprites.keys())
-print(sprites["front_default"])
-# -------------- Testing ------------------------------#
-
-# print(type(pokemon_info["moves"])) # list
-# print(type(pokemon_info["moves"][0])) # dictionary
-# print(pokemon_info["moves"][0].keys())
-# print(pokemon_info["moves"][0]["move"]["name"]) # gets the actual name of the move
-# print(pokemon_info["moves"][0]["version_group_details"][4])
-
-# print(len(pokemon_info["moves"][0]["version_group_details"][0]))
-
-# for version in pokemon_info["moves"][0]["version_group_details"]:
-    
-#     version_group = version["version_group"]["name"]
-
-#     if version_group == latest_move_version_group:
-#         print(version_group)
-'''
+        st.error(f"Pokémon '{selected_pokemon}' not found.")
